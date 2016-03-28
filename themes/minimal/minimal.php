@@ -41,6 +41,10 @@ class MinimalTheme {
             define("THEME_BODY", "<body data-spy='scroll' data-offset='0' data-target='#theMenu'>");
         }
 
+        if (!defined("THEME_BULLET")) {
+            define("THEME_BULLET", "&middot;");
+        }
+
         add_to_footer("
         <!-- Bootstrap core JavaScript
         ================================================== -->
@@ -63,14 +67,14 @@ class MinimalTheme {
                 <a href="#about" class="smoothScroll">About</a>
                 <a href="#portfolio" class="smoothScroll">Portfolio</a>
                 <a href="#contact" class="smoothScroll">Contact</a>
-                <a href="#"><i class="icon-facebook"></i></a>
-                <a href="#"><i class="icon-twitter"></i></a>
-                <a href="#"><i class="icon-dribbble"></i></a>
-                <a href="#"><i class="icon-envelope"></i></a>
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-twitter"></i></a>
+                <a href="#"><i class="fa fa-dribbble"></i></a>
+                <a href="#"><i class="fa fa-envelope"></i></a>
             </div>
 
             <!-- Menu button -->
-            <div id="menuToggle"><i class="icon-reorder"></i></div>
+            <div id="menuToggle"><i class="fa fa-reorder"></i></div>
         </nav>
 
         <!-- ========== HEADER SECTION ========== -->
@@ -78,7 +82,7 @@ class MinimalTheme {
         <div id="headerwrap">
             <div class="container">
                 <div class="logo">
-                    <img src="assets/img/logo.png">
+                    <img src="<?php echo THEME."assets/img/logo.png" ?>" alt="<?php echo fusion_get_settings("sitename") ?>"/>
                 </div>
                 <br>
                 <div class="row">
@@ -99,7 +103,7 @@ class MinimalTheme {
             <div class="container">
                 <div class="row">
                     <h3>ABOUT ME</h3>
-                    <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
+                    <p class="centered"><i class="fa fa-circle"></i><i class="fa fa-circle"></i><i class="fa fa-circle"></i></p>
 
                     <!-- INTRO INFORMATIO-->
                     <div class="col-lg-6 col-lg-offset-3">
@@ -119,20 +123,20 @@ class MinimalTheme {
             <div class="container">
                 <div class="row centered">
                     <h3>SOME PROJECTS</h3>
-                    <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
+                    <p class="centered"><i class="fa fa-circle"></i><i class="fa fa-circle"></i><i class="fa fa-circle"></i></p>
 
                     <div class="col-lg-6 col-lg-offset-3">
                         <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
                             <!-- Wrapper for slides -->
                             <div class="carousel-inner">
                                 <div class="item active centered">
-                                    <img class="img-responsive" src="assets/img/c1.png" alt="">
+                                    <img class="img-responsive" src="<?php echo THEME."assets/img/c1.png" ?>" alt="">
                                 </div>
                                 <div class="item centered">
-                                    <img class="img-responsive" src="assets/img/c2.png" alt="">
+                                    <img class="img-responsive" src="<?php echo THEME."assets/img/c2.png" ?>" alt="">
                                 </div>
                                 <div class="item centered">
-                                    <img class="img-responsive" src="assets/img/c3.png" alt="">
+                                    <img class="img-responsive" src="<?php echo THEME."assets/img/c3.png" ?>" alt="">
                                 </div>
                             </div>
                             <br>
@@ -154,7 +158,7 @@ class MinimalTheme {
             <div class="container">
                 <div class="row">
                     <h3>CONTACT ME</h3>
-                    <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
+                    <p class="centered"><i class="fa fa-circle"></i><i class="fa fa-circle"></i><i class="fa fa-circle"></i></p>
 
                     <div class="col-lg-6 col-lg-offset-3">
                         <p>Some Avenue, 987<br/>Madrid, Spain<br/>+34 8984-4343</p>
@@ -164,6 +168,32 @@ class MinimalTheme {
                 </div>
             </div>
         </div>
+
+        <!-- ========== COPYRIGHT SECTION ======== -->
+        <section id="copyright">
+            <div id="f">
+                <div class="container text-center">
+                    <?php echo stripslashes(strip_tags(fusion_get_settings("footer"))) ?>
+                    <?php echo showcopyright(); ?>
+                    <?php echo "<p>Origin theme courtesy of Blacktie.co</p>"; ?>
+                    <?php
+                    if (fusion_get_settings("visitorcounter_enabled")) {
+                        echo "<p>".showcounter()."</p>\n";
+                    }
+                    if (fusion_get_settings("rendertime_enabled") == '1' || fusion_get_settings("rendertime_enabled") == '2') {
+                        // Make showing of queries and memory usage separate settings
+                        echo showrendertime();
+                        echo showMemoryUsage();
+                    }
+                    $footer_errors = showFooterErrors();
+                    if (!empty($footer_errors)) {
+                        echo "<div>\n".showFooterErrors()."</div>\n";
+                    }
+                    ?>
+                </div>
+            </div>
+        </section>
+
         <?php
     }
 
