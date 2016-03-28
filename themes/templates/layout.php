@@ -79,7 +79,9 @@ if (function_exists("get_head_tags")) {
 echo "<script type='text/javascript' src='".INCLUDES."jquery/jquery.js'></script>\n";
 echo "<script type='text/javascript' src='".INCLUDES."jscript.js'></script>\n";
 echo "</head>\n";
-echo "<body>\n";
+
+// this needs alteration - many modern themes have different body code - need to introduce openbody();
+echo (!defined("THEME_BODY")) ? "<body>\n" : THEME_BODY;
 
 if (iADMIN) {
 	if (iSUPERADMIN && file_exists(BASEDIR."install/")) {
