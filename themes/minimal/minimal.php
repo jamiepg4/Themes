@@ -19,10 +19,14 @@
 | written permission from the original author(s).
 +--------------------------------------------------------*/
 
+require_once THEME."templates/home.php";
 
 class MinimalTheme {
 
+    private $info;
+
     public function __construct() {
+
         add_to_head("
         <!-- Custom styles for this template -->
         <link href='".THEME."assets/css/main.css' rel='stylesheet'>
@@ -55,13 +59,16 @@ class MinimalTheme {
         <script src='".THEME."assets/js/main.js'></script>
         ");
 
-        self::$start_page = self::generate_currentStart();
+        self::$start_page = self::get_currentStart();
 
     }
 
+    /**
+     * To calculate SEO/Non-SEO current page
+     * @var string
+     */
     private static $start_page = "";
-
-    private static function generate_currentStart() {
+    private static function get_currentStart() {
         if (empty(self::$start_page)) {
             $pageInfo   = pathinfo($_SERVER['SCRIPT_NAME']);
             $site_path  = ltrim(fusion_get_settings("site_path"), "/");
@@ -78,20 +85,22 @@ class MinimalTheme {
     }
 
     /**
-     * This displays menu
+     * This displays menu which is custom made by original author
      */
     private function display_menu() {
 
         $data = dbquery_tree_full(DB_SITE_LINKS, "link_id", "link_cat", "WHERE link_position >= 2".(multilang_table("SL") ? "
         AND link_language='".LANGUAGE."'" : "")." AND ".groupaccess('link_visibility')." ORDER BY link_cat, link_order");
 
-        function display_sublinks($data, $id = 0) {
+        $start_page = self::$start_page;
+
+        function display_sublinks($data, $start_page, $id = 0) {
 
             $res = & $res;
 
             if (!empty($data)) {
 
-                $cur_is_start = START_PAGE == fusion_get_settings("opening_page") || self::$start_page == fusion_get_settings("opening_page") ? true : false;
+                $cur_is_start = (START_PAGE == fusion_get_settings("opening_page") || $start_page == fusion_get_settings("opening_page") ? true : false);
 
                 foreach ($data[$id] as $link_id => $link_data) {
 
@@ -130,7 +139,7 @@ class MinimalTheme {
             return $res;
         }
 
-        if (START_PAGE == fusion_get_settings("opening_page") || self::$start_page == fusion_get_settings("opening_page")) {
+        if (START_PAGE == fusion_get_settings("opening_page") || $start_page == fusion_get_settings("opening_page")) {
             ?>
             <a href="#home" class="smoothScroll">Home</a>
             <a href="#<?php echo self::getId("about me")?>" class="smoothScroll">About</a>
@@ -138,58 +147,22 @@ class MinimalTheme {
             <a href="#<?php echo self::getId("contact me")?>" class="smoothScroll">Contact</a>
             <?php
         }
-        echo display_sublinks($data);
+
+        echo display_sublinks($data, $start_page);
+
     }
 
-    private function home_template() {
-        ?>
-        <!-- ========== ABOUT SECTION ========== -->
-        <?php self::opentable("About Me"); ?>
-        <p>A full time theme crafter based in Madrid, Spain. I love designing beautiful, clean and user-friendly interfaces for websites.</p>
-        <p>My passion is turning good ideas and products into eye-catching sites.</p>
-        <p>Sometimes I blog about design and web trends. Also I share links and my thoughts on <a href="http://twitter.com/BlackTie_co">Twitter</a>. Need a free handsome bootstrap theme? <a href="http://blacktie.co">Done!</a></p>
-        <p>I'm available for freelance jobs. Contact me now.</p>
-        <p><button type="button" class="btn btn-warning">I HAVE A FREELANCE JOB</button></p>
-        <?php self::closetable(); ?>
 
-        <!-- ========== CAROUSEL SECTION ========== -->
-        <?php self::opentable("Some Projects") ?>
-        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-            <!-- Wrapper for slides -->
-            <div class="carousel-inner">
-                <div class="item active centered">
-                    <img class="img-responsive" src="<?php echo THEME."assets/img/c1.png" ?>" alt="">
-                </div>
-                <div class="item centered">
-                    <img class="img-responsive" src="<?php echo THEME."assets/img/c2.png" ?>" alt="">
-                </div>
-                <div class="item centered">
-                    <img class="img-responsive" src="<?php echo THEME."assets/img/c3.png" ?>" alt="">
-                </div>
-            </div>
-            <br>
-            <br>
-            <ol class="carousel-indicators">
-                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
-                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
-            </ol>
-        </div>
-        <?php self::closetable(); ?>
-
-        <!-- ========== CONTACT SECTION ========== -->
-        <?php self::opentable("Contact Me"); ?>
-            <p>Some Avenue, 987<br/>Madrid, Spain<br/>+34 8984-4343</p>
-            <p>iam@awesomemail.com</p>
-            <p><button type="button" class="btn btn-warning">YEAH! CONTACT ME NOW!</button></p>
-        <?php self::closetable(); ?>
-        <?php
-    }
 
     public static function getId($title) {
         return strtolower(str_replace(" ", "_", $title));
     }
 
+    /**
+     * Implements opentable() function
+     * @param        $title
+     * @param string $class
+     */
     public static function opentable($title, $class = "") {
         $id_label = self::getId($title);
         ?>
@@ -203,6 +176,9 @@ class MinimalTheme {
         <?php
     }
 
+    /**
+     * Implements closetable() function.
+     */
     public static function closetable() {
         ?>
         </div>
@@ -212,7 +188,11 @@ class MinimalTheme {
         <?php
     }
 
-    public function render_page() {
+    /**
+     * This implements render_page() function as core
+     * @param string $license
+     */
+    public function render_page($license = "") {
         ?>
         <!-- Menu -->
         <nav class="menu" id="theMenu">
@@ -220,36 +200,32 @@ class MinimalTheme {
                 <h1 class="logo"><a href="index.html#home"><?php echo fusion_get_settings("sitename") ?></a></h1>
                 <i class="fa fa-remove menu-close"></i>
                 <?php $this->display_menu(); ?>
-                <a href="#"><i class="fa fa-facebook"></i></a>
-                <a href="#"><i class="fa fa-twitter"></i></a>
+                <?php if (iMEMBER) : ?>
+
+                    <?php if (iADMIN) :
+                        global $aidlink;
+                        ?>
+                        <a href="<?php echo ADMIN.$aidlink; ?>"><i class="fa fa-dashboard"></i></a>
+
+                    <?php endif; ?>
+
+                    <a href="<?php echo FUSION_SELF."?logout=yes" ?>"><i class="fa fa-key"></i></a>
+
+                <?php else : ?>
+
+                    <a href="<?php echo BASEDIR."login.php" ?>"><i class="fa fa-key"></i></a>
+
+                <?php endif; ?>
                 <a href="#"><i class="fa fa-dribbble"></i></a>
-                <a href="#"><i class="fa fa-envelope"></i></a>
+                <?php echo hide_email(fusion_get_settings("siteemail"), "<i class=\"fa fa-envelope\"></i>") ?>
+
             </div>
             <!-- Menu button -->
             <div id="menuToggle"><i class="fa fa-reorder"></i></div>
         </nav>
 
-        <!-- ========== HEADER SECTION ========== -->
-        <section id="home" name="home"></section>
-        <div id="headerwrap">
-            <div class="container">
-                <div class="logo">
-                    <img src="<?php echo THEME."assets/img/logo.png" ?>" alt="<?php echo fusion_get_settings("sitename") ?>"/>
-                </div>
-                <br>
-                <div class="row">
-                    <h1><?php echo fusion_get_settings("sitename") ?></h1>
-                    <br>
-                    <h3><?php echo fusion_get_settings("siteintro") ?></h3>
-                    <br>
-                    <br>
-                    <div class="col-lg-6 col-lg-offset-3">
-                    </div>
-                </div>
-            </div><!-- /container -->
-        </div><!-- /headerwrap -->
-
-        <?php self::home_template(); ?>
+        <!-- ========== BODY SECTION ========== -->
+        <?php echo CONTENT; ?>
 
         <!-- ========== COPYRIGHT SECTION ======== -->
         <section id="copyright">
@@ -275,7 +251,6 @@ class MinimalTheme {
                 </div>
             </div>
         </section>
-
         <?php
     }
 
