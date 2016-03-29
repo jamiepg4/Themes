@@ -20,10 +20,9 @@
 +--------------------------------------------------------*/
 
 require_once THEME."templates/home.php";
+require_once THEME."templates/articles.php";
 
 class MinimalTheme {
-
-    private $info;
 
     public function __construct() {
 
@@ -145,15 +144,30 @@ class MinimalTheme {
             <a href="#<?php echo self::getId("about me")?>" class="smoothScroll">About</a>
             <a href="#<?php echo self::getId("some projects")?>" class="smoothScroll">Portfolio</a>
             <a href="#<?php echo self::getId("contact me")?>" class="smoothScroll">Contact</a>
-            <?php
-        }
 
-        echo display_sublinks($data, $start_page);
+            <?php
+            if (!empty(self::$menu_cache)) {
+                foreach(self::$menu_cache as $anchor => $title) : ?>
+                   <a href="#<?php echo $anchor ?>" class="smoothScroll"><span class="fa fa-link fa-fw display-inline"></span> <?php echo $title ?></a>
+                <?php endforeach;
+            }
+
+            echo display_sublinks($data, $start_page);
+
+        } else {
+
+            echo display_sublinks($data, $start_page);
+
+            if (!empty(self::$menu_cache)) {
+                foreach(self::$menu_cache as $anchor => $title) : ?>
+                    <a href="#<?php echo $anchor ?>" class="smoothScroll"><span class="fa fa-link fa-fw display-inline"></span> <?php echo $title ?></a>
+                <?php endforeach;
+            }
+        }
 
     }
 
-
-
+    /* Converts $title to html compliant ID */
     public static function getId($title) {
         return strtolower(str_replace(" ", "_", $title));
     }
@@ -163,8 +177,14 @@ class MinimalTheme {
      * @param        $title
      * @param string $class
      */
+    private static $menu_cache = array();
+
     public static function opentable($title, $class = "") {
-        $id_label = self::getId($title);
+
+        $id_label = self::getId(strip_tags($title));
+
+        self::$menu_cache[$id_label] = $title;
+
         ?>
         <section id="<?php echo $id_label ?>" name="<?php echo $id_label ?>"></section>
         <div id="f">
@@ -205,19 +225,19 @@ class MinimalTheme {
                     <?php if (iADMIN) :
                         global $aidlink;
                         ?>
-                        <a href="<?php echo ADMIN.$aidlink; ?>"><i class="fa fa-dashboard"></i></a>
+                        <a href="<?php echo ADMIN.$aidlink; ?>"><i class="fa fa-lg fa-dashboard"></i></a>
 
                     <?php endif; ?>
 
-                    <a href="<?php echo FUSION_SELF."?logout=yes" ?>"><i class="fa fa-key"></i></a>
+                    <a href="<?php echo FUSION_SELF."?logout=yes" ?>"><i class="fa fa-lg fa-key"></i></a>
 
                 <?php else : ?>
 
-                    <a href="<?php echo BASEDIR."login.php" ?>"><i class="fa fa-key"></i></a>
+                    <a href="<?php echo BASEDIR."login.php" ?>"><i class="fa fa-lg fa-key"></i></a>
 
                 <?php endif; ?>
                 <a href="#"><i class="fa fa-dribbble"></i></a>
-                <?php echo hide_email(fusion_get_settings("siteemail"), "<i class=\"fa fa-envelope\"></i>") ?>
+                <?php echo hide_email(fusion_get_settings("siteemail"), "<i class=\"fa fa-lg fa-envelope\"></i>") ?>
 
             </div>
             <!-- Menu button -->
