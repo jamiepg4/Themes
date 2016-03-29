@@ -54,6 +54,162 @@ class MinimalTheme {
         <script src='".THEME."assets/js/smoothscroll.js'></script>
         <script src='".THEME."assets/js/main.js'></script>
         ");
+
+        self::$start_page = self::generate_currentStart();
+
+    }
+
+    private static $start_page = "";
+
+    private static function generate_currentStart() {
+        if (empty(self::$start_page)) {
+            $pageInfo   = pathinfo($_SERVER['SCRIPT_NAME']);
+            $site_path  = ltrim(fusion_get_settings("site_path"), "/");
+            self::$start_page = $pageInfo['dirname'] !== "/" ? ltrim($pageInfo['dirname'], "/")."/" : "";
+            self::$start_page = str_replace($site_path, "", self::$start_page);
+            self::$start_page .= $pageInfo['basename'];
+
+            if (fusion_get_settings("site_seo") && defined('IN_PERMALINK') && !isset($_GET['aid'])) {
+                global $filepath;
+                self::$start_page = $filepath;
+            }
+        }
+        return self::$start_page;
+    }
+
+
+    private function display_menu() {
+
+
+
+        $data = dbquery_tree_full(DB_SITE_LINKS, "link_id", "link_cat", "WHERE link_position >= 2".(multilang_table("SL") ? "
+        AND link_language='".LANGUAGE."'" : "")." AND ".groupaccess('link_visibility')." ORDER BY link_cat, link_order");
+
+        function display_sublinks($data, $id = 0) {
+
+            $res = & $res;
+
+            if (!empty($data)) {
+
+                $cur_is_start = START_PAGE == fusion_get_settings("opening_page") || self::$start_page == fusion_get_settings("opening_page") ? true : false;
+
+                foreach ($data[$id] as $link_id => $link_data) {
+
+                    $is_home = ($link_data['link_url'] == "index.php" || $link_data['link_url'] == fusion_get_settings("opening_page") ? true : false);
+
+                    if ($link_data['link_name'] != "---" && $link_data['link_name'] != "===" && (
+                            ($cur_is_start && !$is_home) || (!$cur_is_start && $is_home)
+                        )
+                    ) {
+
+                        $link_target = ($link_data['link_window'] == "1" ? " target='_blank'" : "");
+
+                        if (preg_match("!^(ht|f)tp(s)?://!i", $link_data['link_url'])) {
+
+                            $itemlink = $link_data['link_url'];
+
+                        } else {
+
+                            $base = BASEDIR;
+                            if (!empty($base) && stristr($link_data['link_url'], BASEDIR)) {
+                                $itemlink = $link_data['link_url'];
+                            } else {
+                                $itemlink = BASEDIR.$link_data['link_url'];
+                            }
+
+                        }
+
+                        $res .= "<a href='".$itemlink."'".$link_target.">\n";
+                        $res .= (!empty($link_data['link_icon']) ? "<i class='".$link_data['link_icon']."'></i>" : "");
+                        $res .= $link_data['link_name']."</a>\n";
+
+                    }
+                }
+            }
+
+            return $res;
+        }
+
+        if (START_PAGE == fusion_get_settings("opening_page") || self::$start_page == fusion_get_settings("opening_page")) {
+            ?>
+            <a href="#home" class="smoothScroll">Home</a>
+            <a href="#about" class="smoothScroll">About</a>
+            <a href="#portfolio" class="smoothScroll">Portfolio</a>
+            <a href="#contact" class="smoothScroll">Contact</a>
+            <?php
+        }
+        echo display_sublinks($data);
+    }
+
+    private function home_template() {
+        ?>
+        <!-- ========== ABOUT SECTION ========== -->
+        <?php self::opentable("About Me"); ?>
+        <p>A full time theme crafter based in Madrid, Spain. I love designing beautiful, clean and user-friendly interfaces for websites.</p>
+        <p>My passion is turning good ideas and products into eye-catching sites.</p>
+        <p>Sometimes I blog about design and web trends. Also I share links and my thoughts on <a href="http://twitter.com/BlackTie_co">Twitter</a>. Need a free handsome bootstrap theme? <a href="http://blacktie.co">Done!</a></p>
+        <p>I'm available for freelance jobs. Contact me now.</p>
+        <p><button type="button" class="btn btn-warning">I HAVE A FREELANCE JOB</button></p>
+        <?php self::closetable(); ?>
+
+        <!-- ========== CAROUSEL SECTION ========== -->
+        <?php self::opentable("Some Projects") ?>
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+                <div class="item active centered">
+                    <img class="img-responsive" src="<?php echo THEME."assets/img/c1.png" ?>" alt="">
+                </div>
+                <div class="item centered">
+                    <img class="img-responsive" src="<?php echo THEME."assets/img/c2.png" ?>" alt="">
+                </div>
+                <div class="item centered">
+                    <img class="img-responsive" src="<?php echo THEME."assets/img/c3.png" ?>" alt="">
+                </div>
+            </div>
+            <br>
+            <br>
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+            </ol>
+        </div>
+        <?php self::closetable(); ?>
+
+        <!-- ========== CONTACT SECTION ========== -->
+        <?php self::opentable("Contact Me"); ?>
+            <p>Some Avenue, 987<br/>Madrid, Spain<br/>+34 8984-4343</p>
+            <p>iam@awesomemail.com</p>
+            <p><button type="button" class="btn btn-warning">YEAH! CONTACT ME NOW!</button></p>
+        <?php self::closetable(); ?>
+        <?php
+    }
+
+    public static function getId($title) {
+        return ucfirst(strtolower(str_replace("_", " ", $title)));
+    }
+
+    public static function opentable($title, $class = "") {
+        $id_label = self::getId($title);
+        ?>
+        <section id="<?php echo $id_label ?>" name="<?php echo $id_label ?>"></section>
+        <div id="f">
+            <div class="container">
+                <div class="row">
+                    <h3><?php echo $title ?></h3>
+                    <p class="centered"><i class="fa fa-circle"></i><i class="fa fa-circle"></i><i class="fa fa-circle"></i></p>
+                    <div class="col-lg-6 col-lg-offset-3">
+        <?php
+    }
+
+    public static function closetable() {
+        ?>
+        </div>
+        </div>
+        </div>
+        </div>
+        <?php
     }
 
     public function render_page() {
@@ -61,18 +217,14 @@ class MinimalTheme {
         <!-- Menu -->
         <nav class="menu" id="theMenu">
             <div class="menu-wrap">
-                <h1 class="logo"><a href="index.html#home">Minimal</a></h1>
-                <i class="icon-remove menu-close"></i>
-                <a href="#home" class="smoothScroll">Home</a>
-                <a href="#about" class="smoothScroll">About</a>
-                <a href="#portfolio" class="smoothScroll">Portfolio</a>
-                <a href="#contact" class="smoothScroll">Contact</a>
+                <h1 class="logo"><a href="index.html#home"><?php echo fusion_get_settings("sitename") ?></a></h1>
+                <i class="fa fa-remove menu-close"></i>
+                <?php $this->display_menu(); ?>
                 <a href="#"><i class="fa fa-facebook"></i></a>
                 <a href="#"><i class="fa fa-twitter"></i></a>
                 <a href="#"><i class="fa fa-dribbble"></i></a>
                 <a href="#"><i class="fa fa-envelope"></i></a>
             </div>
-
             <!-- Menu button -->
             <div id="menuToggle"><i class="fa fa-reorder"></i></div>
         </nav>
@@ -86,9 +238,9 @@ class MinimalTheme {
                 </div>
                 <br>
                 <div class="row">
-                    <h1>MINIMAL THEME</h1>
+                    <h1><?php echo fusion_get_settings("sitename") ?></h1>
                     <br>
-                    <h3>Hello, I'm Carlos. I love design.</h3>
+                    <h3><?php echo fusion_get_settings("siteintro") ?></h3>
                     <br>
                     <br>
                     <div class="col-lg-6 col-lg-offset-3">
@@ -97,77 +249,7 @@ class MinimalTheme {
             </div><!-- /container -->
         </div><!-- /headerwrap -->
 
-        <!-- ========== ABOUT SECTION ========== -->
-        <section id="about" name="about"></section>
-        <div id="f">
-            <div class="container">
-                <div class="row">
-                    <h3>ABOUT ME</h3>
-                    <p class="centered"><i class="fa fa-circle"></i><i class="fa fa-circle"></i><i class="fa fa-circle"></i></p>
-
-                    <!-- INTRO INFORMATIO-->
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <p>A full time theme crafter based in Madrid, Spain. I love designing beautiful, clean and user-friendly interfaces for websites.</p>
-                        <p>My passion is turning good ideas and products into eye-catching sites.</p>
-                        <p>Sometimes I blog about design and web trends. Also I share links and my thoughts on <a href="http://twitter.com/BlackTie_co">Twitter</a>. Need a free handsome bootstrap theme? <a href="http://blacktie.co">Done!</a></p>
-                        <p>I'm available for freelance jobs. Contact me now.</p>
-                        <p><button type="button" class="btn btn-warning">I HAVE A FREELANCE JOB</button></p>
-                    </div>
-                </div>
-            </div><!-- /container -->
-        </div><!-- /f -->
-
-        <!-- ========== CAROUSEL SECTION ========== -->
-        <section id="portfolio" name="portfolio"></section>
-        <div id="f">
-            <div class="container">
-                <div class="row centered">
-                    <h3>SOME PROJECTS</h3>
-                    <p class="centered"><i class="fa fa-circle"></i><i class="fa fa-circle"></i><i class="fa fa-circle"></i></p>
-
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-                            <!-- Wrapper for slides -->
-                            <div class="carousel-inner">
-                                <div class="item active centered">
-                                    <img class="img-responsive" src="<?php echo THEME."assets/img/c1.png" ?>" alt="">
-                                </div>
-                                <div class="item centered">
-                                    <img class="img-responsive" src="<?php echo THEME."assets/img/c2.png" ?>" alt="">
-                                </div>
-                                <div class="item centered">
-                                    <img class="img-responsive" src="<?php echo THEME."assets/img/c3.png" ?>" alt="">
-                                </div>
-                            </div>
-                            <br>
-                            <br>
-                            <ol class="carousel-indicators">
-                                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-                                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
-                                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
-                            </ol>
-                        </div>
-                    </div><!-- col-lg-8 -->
-                </div><!-- row -->
-            </div><!-- container -->
-        </div>	<!-- f -->
-
-        <!-- ========== CONTACT SECTION ========== -->
-        <section id="contact" name="contact"></section>
-        <div id="f">
-            <div class="container">
-                <div class="row">
-                    <h3>CONTACT ME</h3>
-                    <p class="centered"><i class="fa fa-circle"></i><i class="fa fa-circle"></i><i class="fa fa-circle"></i></p>
-
-                    <div class="col-lg-6 col-lg-offset-3">
-                        <p>Some Avenue, 987<br/>Madrid, Spain<br/>+34 8984-4343</p>
-                        <p>iam@awesomemail.com</p>
-                        <p><button type="button" class="btn btn-warning">YEAH! CONTACT ME NOW!</button></p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php self::home_template(); ?>
 
         <!-- ========== COPYRIGHT SECTION ======== -->
         <section id="copyright">

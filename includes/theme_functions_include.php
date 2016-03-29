@@ -516,12 +516,14 @@ if (!function_exists("showsublinks")) {
 						|| $start_page == fusion_get_settings("opening_page") && $i == 0 && $id === 0) {
 						$li_class .= ($li_class ? " " : "")."current-link active";
 					}
-					if (preg_match("!^(ht|f)tp(s)?://!i", $link_data['link_url'])) {
+
+                    if (preg_match("!^(ht|f)tp(s)?://!i", $link_data['link_url'])) {
 
                         $itemlink = $link_data['link_url'];
 
 					} else {
-			$base=BASEDIR;
+
+                        $base = BASEDIR;
                         if (!empty($base) && stristr($link_data['link_url'], BASEDIR)) {
                             $itemlink = $link_data['link_url'];
                         } else {
