@@ -259,9 +259,13 @@ class MinimalTheme {
         <section id="copyright">
             <div id="f">
                 <div class="container text-center">
+                    <p>
                     <?php echo stripslashes(strip_tags(fusion_get_settings("footer"))) ?>
                     <?php echo showcopyright(); ?>
-                    <?php echo "<p>Origin theme courtesy of Blacktie.co</p>"; ?>
+                    </p>
+                    <p>
+                        <?php echo fusion_get_locale("credits", THEME_LOCALE) ?>
+                    </p>
                     <?php
                     if (fusion_get_settings("visitorcounter_enabled")) {
                         echo "<p>".showcounter()."</p>\n";

@@ -12,3 +12,4 @@ Need a free handsome bootstrap theme? <a href=\"http://blacktie.co\">Done!</a></
 $locale['project_title'] = "Some Projects";
 $locale['contact_me_title'] = "Contact Me";
 $locale['contact_me_now'] = "YEAH! CONTACT ME NOW!";
+$locale['credits'] = "Origin theme courtesy of Blacktie.co";
