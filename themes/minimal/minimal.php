@@ -44,6 +44,14 @@ class MinimalTheme {
             define("THEME_BODY", "<body data-spy='scroll' data-offset='0' data-target='#theMenu'>");
         }
 
+        if (!defined("THEME_LOCALE")) {
+            if (file_exists(THEME."locale/".LANGUAGE.".php")) {
+                define("THEME_LOCALE", THEME."locale/".LANGUAGE.".php");
+            } else {
+                define("THEME_LOCALE", THEME."locale/English.php");
+            }
+        }
+
         if (!defined("THEME_BULLET")) {
             define("THEME_BULLET", "&middot;");
         }

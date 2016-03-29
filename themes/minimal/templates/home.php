@@ -61,29 +61,25 @@ class home_template extends MinimalTheme {
                 foreach($content['data'] as $data) {
                     echo "<div class='".$classes." clearfix'>";
                     echo "<h3><a href='".$data['url']."'>".$data['title']."</a></h3>";
-                    echo "<div class='small m-b-10'>".$data['meta']."</div>";
-                    echo "<div class='overflow-hide'>".fusion_first_words($data['content'], 100)."</div>";
+                    echo "<p class='small m-b-10'>".$data['meta']."</p>";
+                    echo "<p class='overflow-hide'>".fusion_first_words($data['content'], 100)."</p>";
                     echo "</div>";
                 }
                 echo "</div>";
             } else {
-                echo $content['norecord'];
+                echo "<p>".$content['norecord']."</p>\n";
             }
             closetable();
         }
         ?>
 
         <!-- ========== ABOUT SECTION ========== -->
-        <?php self::opentable("About Me"); ?>
-        <p>A full time theme crafter based in Madrid, Spain. I love designing beautiful, clean and user-friendly interfaces for websites.</p>
-        <p>My passion is turning good ideas and products into eye-catching sites.</p>
-        <p>Sometimes I blog about design and web trends. Also I share links and my thoughts on <a href="http://twitter.com/BlackTie_co">Twitter</a>. Need a free handsome bootstrap theme? <a href="http://blacktie.co">Done!</a></p>
-        <p>I'm available for freelance jobs. Contact me now.</p>
-        <p><button type="button" class="btn btn-warning">I HAVE A FREELANCE JOB</button></p>
+        <?php self::opentable(fusion_get_locale("about_me_title", THEME_LOCALE)); ?>
+        <?php echo fusion_get_locale("about_me", THEME_LOCALE) ?>
         <?php self::closetable(); ?>
 
         <!-- ========== CAROUSEL SECTION ========== -->
-        <?php self::opentable("Some Projects") ?>
+        <?php self::opentable(fusion_get_locale("project_title", THEME_LOCALE)) ?>
         <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
             <!-- Wrapper for slides -->
             <div class="carousel-inner">
@@ -108,10 +104,13 @@ class home_template extends MinimalTheme {
         <?php self::closetable(); ?>
 
         <!-- ========== CONTACT SECTION ========== -->
-        <?php self::opentable("Contact Me"); ?>
-        <p>Some Avenue, 987<br/>Madrid, Spain<br/>+34 8984-4343</p>
-        <p>iam@awesomemail.com</p>
-        <p><button type="button" class="btn btn-warning">YEAH! CONTACT ME NOW!</button></p>
+        <?php self::opentable(fusion_get_locale("contact_me_title", THEME_LOCALE)); ?>
+        <p><?php echo fusion_get_settings("siteemail") ?></p>
+        <p>
+            <button type="button" class="btn btn-warning">
+                <?php echo fusion_get_locale("contact_me_now", THEME_LOCALE); ?>
+            </button>
+        </p>
         <?php self::closetable(); ?>
 
         <?php
