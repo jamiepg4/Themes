@@ -122,7 +122,7 @@ class article_template extends MinimalTheme {
                     </h3>
 					<span class='badge'><i class='fa fa-folder'></i> ".$catData['article_sub_count']."</span>
 					<span class='badge'><i class='fa fa-file-o'></i> ".$catData['article_count']."</span>";
-                    echo ($catData['article_cat_description'] != "") ? "<div>".parse_textarea($catData['article_cat_description'])."</div>" : "";
+                    echo ($catData['article_cat_description'] != "") ? "<p>".parse_textarea($catData['article_cat_description'], FALSE, FALSE)."</p>" : "";
                     echo "</div>\n";
                     $counter++;
                 }
@@ -135,10 +135,12 @@ class article_template extends MinimalTheme {
                 foreach ($info['articles']['item'] as $cdata) {
                     echo "<aside>\n";
                     echo "<h4 class='display-inline-block'><strong><a href='".INFUSIONS."articles/articles.php?article_id=".$cdata['article_id']."'>".$cdata['article_subject']."</a></strong></h4> <span class='label label-success m-l-5'>".$cdata['new']."</span><br/>\n";
+                    echo "<p>\n";
                     echo preg_replace("/<!?--\s*pagebreak\s*-->/i", "", stripslashes($cdata['article_snippet']))."\n";
+                    echo "</p>\n";
                     echo "</aside>\n";
-                    echo "<hr/>\n";
                 }
+
                 echo !empty($info['page_nav']) ? "<div class='m-t-5'>".$info['page_nav']."</div>\n" : '';
             } else {
                 echo "<div class='well text-center'>".$locale['403']."</div>\n";
