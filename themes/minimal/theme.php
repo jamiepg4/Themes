@@ -36,10 +36,12 @@ function closeside() {
 
 }
 
-function opentable($title) {
-
+function opentable($title, $class = FALSE) {
+    global $theme;
+    $theme::opentable($title, $class);
 }
 
 function closetable() {
-
+    global $theme;
+    $theme::closetable();
 }
