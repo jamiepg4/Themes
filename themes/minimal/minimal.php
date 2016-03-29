@@ -77,10 +77,10 @@ class MinimalTheme {
         return self::$start_page;
     }
 
-
+    /**
+     * This displays menu
+     */
     private function display_menu() {
-
-
 
         $data = dbquery_tree_full(DB_SITE_LINKS, "link_id", "link_cat", "WHERE link_position >= 2".(multilang_table("SL") ? "
         AND link_language='".LANGUAGE."'" : "")." AND ".groupaccess('link_visibility')." ORDER BY link_cat, link_order");
@@ -133,9 +133,9 @@ class MinimalTheme {
         if (START_PAGE == fusion_get_settings("opening_page") || self::$start_page == fusion_get_settings("opening_page")) {
             ?>
             <a href="#home" class="smoothScroll">Home</a>
-            <a href="#about" class="smoothScroll">About</a>
-            <a href="#portfolio" class="smoothScroll">Portfolio</a>
-            <a href="#contact" class="smoothScroll">Contact</a>
+            <a href="#<?php echo self::getId("about me")?>" class="smoothScroll">About</a>
+            <a href="#<?php echo self::getId("some projects")?>" class="smoothScroll">Portfolio</a>
+            <a href="#<?php echo self::getId("contact me")?>" class="smoothScroll">Contact</a>
             <?php
         }
         echo display_sublinks($data);
@@ -187,7 +187,7 @@ class MinimalTheme {
     }
 
     public static function getId($title) {
-        return ucfirst(strtolower(str_replace("_", " ", $title)));
+        return strtolower(str_replace(" ", "_", $title));
     }
 
     public static function opentable($title, $class = "") {
