@@ -127,6 +127,7 @@ class MinimalTheme {
                         } else {
 
                             $base = BASEDIR;
+
                             if (!empty($base) && stristr($link_data['link_url'], BASEDIR)) {
                                 $itemlink = $link_data['link_url'];
                             } else {
@@ -225,7 +226,7 @@ class MinimalTheme {
         <!-- Menu -->
         <nav class="menu" id="theMenu">
             <div class="menu-wrap">
-                <h1 class="logo"><a href="index.html#home"><?php echo fusion_get_settings("sitename") ?></a></h1>
+                <h1 class="logo"><a href="<?php echo BASEDIR."index.php" ?>"><?php echo fusion_get_settings("sitename") ?></a></h1>
                 <i class="fa fa-remove menu-close"></i>
                 <?php $this->display_menu(); ?>
                 <?php if (iMEMBER) : ?>
